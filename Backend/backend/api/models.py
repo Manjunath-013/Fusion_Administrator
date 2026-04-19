@@ -116,17 +116,17 @@ class GlobalsExtrainfo(models.Model):
     about_me = models.TextField()
     date_modified = models.DateTimeField(blank=True, null=True)
     department = models.ForeignKey(GlobalsDepartmentinfo, on_delete=models.CASCADE, blank=True, null=True)
-    user = models.OneToOneField(AuthUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(AuthUser, on_delete=models.CASCADE, db_column='user_id')
 
     class Meta:
         managed = False
         db_table = 'globals_extrainfo'
 
 class Staff(models.Model):
-    id = models.OneToOneField(GlobalsExtrainfo, on_delete=models.CASCADE, primary_key=True)
+    extrainfo = models.OneToOneField(GlobalsExtrainfo, on_delete=models.CASCADE, primary_key=True, db_column='id')
 
     def __str__(self):
-        return str(self.id)
+        return str(self.extrainfo)
     
     class Meta:
         managed = False
@@ -174,7 +174,7 @@ class GlobalsModuleaccess(models.Model):
 
 class Student(models.Model):
 
-    id = models.OneToOneField(GlobalsExtrainfo, on_delete=models.CASCADE, primary_key=True)
+    extrainfo = models.OneToOneField(GlobalsExtrainfo, on_delete=models.CASCADE, primary_key=True, db_column='id')
     programme = models.CharField(max_length=10)
     batch = models.IntegerField(default=2016)
     batch_id = models.ForeignKey(Batch, null=True, blank=True, on_delete=models.CASCADE)
@@ -192,16 +192,16 @@ class Student(models.Model):
         db_table = 'academic_information_student'
 
     def __str__(self):
-        username = str(self.id.user.username)
+        username = str(self.extrainfo.user.username)
         return username
     
     
 class GlobalsFaculty(models.Model):
 
-    id = models.OneToOneField(GlobalsExtrainfo, on_delete=models.CASCADE, primary_key=True)
+    extrainfo = models.OneToOneField(GlobalsExtrainfo, on_delete=models.CASCADE, primary_key=True, db_column='id')
 
     def __str__(self):
-        return str(self.id)
+        return str(self.extrainfo)
     
     class Meta:
         managed = False

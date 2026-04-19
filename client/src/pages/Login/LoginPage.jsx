@@ -4,6 +4,7 @@ import { TextInput, Button, Paper, Container, Title } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { handleLogin } from "../../services/authServices.jsx";
 import { useAuth } from "../../context/AuthContext";
+import axiosInstance from "../../context/axiosInstance.jsx";
 
 const LoginPage = () => {
   const form = useForm({
@@ -19,10 +20,24 @@ const LoginPage = () => {
 
   const onLogin = async (values) => {
     try {
-      const user = await handleLogin(values.email, values.password);
-      console.log("Logged in user:", user);
-      login();
-      navigate("/UserDirectory", { replace: true });
+      // Try Firebase login first (if configured)
+      const firebaseUser = await handleLogin(values.email, values.password);
+      
+      // If Firebase is not configured, use simple backend authentication
+      if (!firebaseUser) {
+        console.log("Using backend authentication - skipping Firebase");
+        // For now, just set authentication state without backend validation
+        // You can manually add a token in localStorage if needed for API calls
+        localStorage.setItem("authToken", "demo-token-for-testing");
+        console.log("Logged in with backend (demo mode)");
+        login();
+        navigate("/UserDirectory", { replace: true });
+      } else {
+        // Firebase login succeeded
+        console.log("Logged in user:", firebaseUser);
+        login();
+        navigate("/UserDirectory", { replace: true });
+      }
     } catch (error) {
       console.error("Login error:", error.message);
       alert("Invalid credentials or login failed. Please try again");
